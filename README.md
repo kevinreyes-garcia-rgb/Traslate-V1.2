@@ -3,6 +3,8 @@ Hola he creado un hermoso traductor, nada util la verdad
 ---
 
 ##Imagen del Proyecto##
+
+
 ![Imagen Cover](https://files.catbox.moe/58cy5z.jpeg)
 ---
 
