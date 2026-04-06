@@ -148,6 +148,7 @@
       min-height: 80px;
       border-left: 6px solid var(--red-klee);
       animation: fadeIn 0.5s ease;
+      word-wrap: break-word;
     }
 
     .swap-btn {
@@ -163,7 +164,6 @@
       transform: rotate(180deg);
     }
 
-    /* Animaciones bonitas estilo Klee */
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(30px); }
@@ -175,18 +175,19 @@
     }
 
     .spark {
-      position: absolute;
+      position: fixed;
       width: 8px;
       height: 8px;
       background: var(--accent);
       border-radius: 50%;
-      animation: sparkAnim 1.5s infinite;
+      animation: sparkAnim 1.5s forwards;
       pointer-events: none;
+      z-index: 9999;
     }
 
     @keyframes sparkAnim {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(0); opacity: 0; transform: translateY(20px); }
     }
 
     footer {
@@ -197,6 +198,7 @@
     }
 
     .klee-icon {
+      display: inline-block;
       font-size: 2.5rem;
       animation: bounce 2s infinite;
     }
@@ -215,8 +217,6 @@
   </header>
 
   <div class="container">
-
-    <!-- TRADUCTOR -->
     <div class="card">
       <h2>🌍 Traductor</h2>
       
@@ -226,6 +226,7 @@
           <option value="en">English</option>
           <option value="fr">Français</option>
           <option value="de">Deutsch</option>
+          <option value="it">Italiano</option>
           <option value="ja">日本語</option>
           <option value="zh">中文</option>
         </select>
@@ -237,6 +238,7 @@
           <option value="es" selected>Español</option>
           <option value="fr">Français</option>
           <option value="de">Deutsch</option>
+          <option value="it">Italiano</option>
           <option value="ja">日本語</option>
           <option value="zh">中文</option>
         </select>
@@ -254,18 +256,17 @@
       </div>
     </div>
 
-    <!-- BUSCADOR DE DEFINICIONES -->
     <div class="card">
       <h2>🔍 Buscar Definición</h2>
       
-      <input type="text" id="wordInput" placeholder="Escribe una palabra en inglés... (ej: explosion)">
+      <input type="text" id="wordInput" placeholder="Escribe una palabra en inglés...">
       <div style="text-align: center; margin: 1rem 0;">
         <button onclick="searchDefinition()">Buscar Definición ✨</button>
       </div>
 
       <div class="result" id="definitionResult">
         <strong>Definición:</strong><br>
-        <span id="defText">La definición aparecerá aquí...</span>
+        <span id="defText">La definición aparecerá aquí... (Actualmente solo en inglés)</span>
       </div>
     </div>
   </div>
@@ -275,44 +276,39 @@
   </footer>
 
   <script>
-    // Traducción con LibreTranslate (API pública gratuita)
+    // Usamos una API de traducción más estable (MyMemory) que no requiere Key para uso básico
     async function translateText() {
       const text = document.getElementById('inputText').value.trim();
       if (!text) return alert("¡Escribe algo para traducir!");
 
       const from = document.getElementById('langFrom').value;
       const to = document.getElementById('langTo').value;
+      const resultSpan = document.getElementById('translatedText');
 
-      const resultDiv = document.getElementById('translatedText');
-      resultDiv.textContent = "Traduciendo... 💥";
+      resultSpan.textContent = "Traduciendo... 💥";
 
       try {
-        const res = await fetch('https://libretranslate.de/translate', {
-          method: 'POST',
-          body: JSON.stringify({
-            q: text,
-            source: from,
-            target: to,
-            format: "text"
-          }),
-          headers: { 'Content-Type': 'application/json' }
-        });
-
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
         const data = await res.json();
-        resultDiv.textContent = data.translatedText || "No se pudo traducir 😢";
+
+        if (data.responseData) {
+          resultSpan.textContent = data.responseData.translatedText;
+        } else {
+          resultSpan.textContent = "¡Oh no! Algo explotó mal. Inténtalo de nuevo.";
+        }
       } catch (err) {
-        resultDiv.textContent = "Error de conexión. Inténtalo de nuevo.";
+        resultSpan.textContent = "Error de conexión. Jean me va a regañar... 😢";
       }
     }
 
-    // Intercambiar idiomas
     function swapLanguages() {
       const from = document.getElementById('langFrom');
       const to = document.getElementById('langTo');
-      [from.value, to.value] = [to.value, from.value];
+      const temp = from.value;
+      from.value = to.value;
+      to.value = temp;
     }
 
-    // Definiciones (Free Dictionary API - solo inglés por ahora)
     async function searchDefinition() {
       const word = document.getElementById('wordInput').value.trim().toLowerCase();
       if (!word) return alert("¡Escribe una palabra!");
@@ -324,42 +320,41 @@
         const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = await res.json();
 
-        if (data.title === "No Definitions Found") {
-          defText.innerHTML = `<strong>${word}</strong>: No se encontró definición. ¡Prueba otra palabra!`;
+        if (!Array.isArray(data)) {
+          defText.innerHTML = `<strong>${word}</strong>: No encontré esa palabra en mi libro. ¡Prueba otra!`;
           return;
         }
 
-        let html = `<strong>${data[0].word}</strong> (${data[0].phonetic || ''})<br><br>`;
+        let html = `<strong>${data[0].word.toUpperCase()}</strong> ${data[0].phonetic ? `[${data[0].phonetic}]` : ''}<br><br>`;
         
         data[0].meanings.forEach(meaning => {
-          html += `<strong>${meaning.partOfSpeech}</strong><br>`;
-          meaning.definitions.slice(0, 3).forEach((def, i) => {
-            html += `${i+1}. ${def.definition}<br><br>`;
+          html += `<em style="color: var(--red-klee)">${meaning.partOfSpeech}</em><br>`;
+          meaning.definitions.slice(0, 2).forEach((def, i) => {
+            html += `${i+1}. ${def.definition}<br>`;
           });
+          html += "<br>";
         });
 
         defText.innerHTML = html;
       } catch (err) {
-        defText.textContent = "Error al buscar la definición. Inténtalo más tarde.";
+        defText.textContent = "Error al buscar. ¡Tal vez la palabra voló por los aires!";
       }
     }
 
-    // Pequeño efecto de chispas al hacer clic en botones (estilo Klee)
+    // Efecto de chispas corregido para que aparezcan en la posición del ratón correctamente
     document.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', (e) => {
         for (let i = 0; i < 8; i++) {
           const spark = document.createElement('div');
           spark.className = 'spark';
-          spark.style.left = `${e.clientX + Math.random() * 40 - 20}px`;
-          spark.style.top = `${e.clientY + Math.random() * 40 - 20}px`;
+          spark.style.left = `${e.pageX + Math.random() * 40 - 20}px`;
+          spark.style.top = `${e.pageY + Math.random() * 40 - 20}px`;
           document.body.appendChild(spark);
-          
-          setTimeout(() => spark.remove(), 1500);
+          setTimeout(() => spark.remove(), 1000);
         }
       });
     });
 
-    // Atajo: Enter en el input de definición
     document.getElementById('wordInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') searchDefinition();
     });
