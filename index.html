@@ -213,7 +213,7 @@
 
   <header>
     <h1>Translate Klee <span class="klee-icon">💥</span></h1>
-    <p class="subtitle">¡Traduce con estilo explosivo! ✨ | Definiciones de todo el mundo</p>
+    <p class="subtitle">¡Traduce con estilo explosivo! ✨ | Definiciones divertidas</p>
   </header>
 
   <div class="container">
@@ -259,14 +259,14 @@
     <div class="card">
       <h2>🔍 Buscar Definición</h2>
       
-      <input type="text" id="wordInput" placeholder="Busca cualquier palabra (ej: Bomb, Felicidad, 炸弾)">
+      <input type="text" id="wordInput" placeholder="Escribe una palabra en inglés...">
       <div style="text-align: center; margin: 1rem 0;">
         <button onclick="searchDefinition()">Buscar Definición ✨</button>
       </div>
 
       <div class="result" id="definitionResult">
-        <strong>Resultado:</strong><br>
-        <span id="defText">Busca una palabra en cualquier idioma...</span>
+        <strong>Definición:</strong><br>
+        <span id="defText">La definición aparecerá aquí... (Actualmente solo en inglés)</span>
       </div>
     </div>
   </div>
@@ -276,6 +276,7 @@
   </footer>
 
   <script>
+    // Usamos una API de traducción más estable (MyMemory) que no requiere Key para uso básico
     async function translateText() {
       const text = document.getElementById('inputText').value.trim();
       if (!text) return alert("¡Escribe algo para traducir!");
@@ -289,9 +290,14 @@
       try {
         const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
         const data = await res.json();
-        resultSpan.textContent = data.responseData.translatedText || "¡Algo falló!";
+
+        if (data.responseData) {
+          resultSpan.textContent = data.responseData.translatedText;
+        } else {
+          resultSpan.textContent = "¡Oh no! Algo explotó mal. Inténtalo de nuevo.";
+        }
       } catch (err) {
-        resultSpan.textContent = "Error de conexión... 😢";
+        resultSpan.textContent = "Error de conexión. Jean me va a regañar... 😢";
       }
     }
 
@@ -303,42 +309,39 @@
       to.value = temp;
     }
 
-    // BUSCADOR UNIVERSAL MEJORADO
     async function searchDefinition() {
-      const word = document.getElementById('wordInput').value.trim();
+      const word = document.getElementById('wordInput').value.trim().toLowerCase();
       if (!word) return alert("¡Escribe una palabra!");
 
       const defText = document.getElementById('defText');
-      defText.innerHTML = "Buscando en mis libros... 📖✨";
+      defText.innerHTML = "Buscando... ✨";
 
       try {
-        // Intento 1: Diccionario de Inglés (si es palabra en inglés da más detalle)
-        const resEng = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-        const dataEng = await resEng.json();
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = await res.json();
 
-        if (Array.isArray(dataEng)) {
-          let html = `<strong>${dataEng[0].word.toUpperCase()}</strong> (English)<br><br>`;
-          dataEng[0].meanings.forEach(m => {
-            html += `<em style="color:var(--red-klee)">${m.partOfSpeech}</em>: ${m.definitions[0].definition}<br>`;
-          });
-          defText.innerHTML = html;
-        } else {
-          // Intento 2: Búsqueda Universal (para cualquier idioma)
-          // Obtenemos una explicación simple traduciendo la palabra al español con un prompt de "definición"
-          const resUni = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=auto|es`);
-          const dataUni = await resUni.json();
-          
-          if (dataUni.responseData) {
-            defText.innerHTML = `<strong>${word}</strong><br><br>Significado/Traducción: ${dataUni.responseData.translatedText}<br><br><small>Klee dice: ¡Esta palabra parece muy interesante!</small>`;
-          } else {
-            defText.innerHTML = "No pude encontrar esa palabra... ¡Debe ser un secreto de Albedo! 🍀";
-          }
+        if (!Array.isArray(data)) {
+          defText.innerHTML = `<strong>${word}</strong>: No encontré esa palabra en mi libro. ¡Prueba otra!`;
+          return;
         }
+
+        let html = `<strong>${data[0].word.toUpperCase()}</strong> ${data[0].phonetic ? `[${data[0].phonetic}]` : ''}<br><br>`;
+        
+        data[0].meanings.forEach(meaning => {
+          html += `<em style="color: var(--red-klee)">${meaning.partOfSpeech}</em><br>`;
+          meaning.definitions.slice(0, 2).forEach((def, i) => {
+            html += `${i+1}. ${def.definition}<br>`;
+          });
+          html += "<br>";
+        });
+
+        defText.innerHTML = html;
       } catch (err) {
-        defText.textContent = "¡Booom! Hubo un error al buscar.";
+        defText.textContent = "Error al buscar. ¡Tal vez la palabra voló por los aires!";
       }
     }
 
+    // Efecto de chispas corregido para que aparezcan en la posición del ratón correctamente
     document.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', (e) => {
         for (let i = 0; i < 8; i++) {
