@@ -3,6 +3,7 @@ Hola he creado un hermoso traductor, nada util la verdad
 ---
 
 ##Imagen del Proyecto##
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&width=435&lines=Hola+soy+Desarrollador;Bienvenido+a+mi+repo;Aprende+conmigo)](https://git.io/typing-svg)
 
 
 ![Imagen Cover](https://files.catbox.moe/58cy5z.jpeg)
