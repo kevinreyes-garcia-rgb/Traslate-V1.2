@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>traducKlee ✨</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fredoka:wght@500;600&display=swap');
+
+    :root {
+      --red-klee: #f0528c;
+      --dark-red: #eb5020;
+      --gold: #fad08d;
+      --white: #fff;
+      --light-bg: #fff9f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0528c, #eb5020, #f7c09a);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Fondo con partículas sutiles estilo Klee */
+    .sparkles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      animation: sparkle 8s linear infinite;
+      opacity: 0.6;
+    }
+
+    .container {
+      background: var(--white);
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(240, 82, 140, 0.4);
+      width: 95%;
+      max-width: 1100px;
+      overflow: hidden;
+      border: 8px solid #fad08d;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      background: linear-gradient(to right, #f0528c, #eb5020);
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+    }
+
+    .logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      animation: bounce 2s infinite alternate;
+    }
+
+    .logo::after {
+      content: "💥";
+      font-size: 32px;
+    }
+
+    .main {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .box {
+      flex: 1;
+      min-width: 320px;
+      padding: 25px;
+      position: relative;
+    }
+
+    .box-left {
+      background: var(--light-bg);
+      border-right: 3px solid #fad08d;
+    }
+
+    textarea, .result {
+      width: 100%;
+      min-height: 220px;
+      border: 3px solid #f7c09a;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 18px;
+      outline: none;
+      resize: none;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus, .result:hover {
+      border-color: var(--red-klee);
+      box-shadow: 0 0 15px rgba(240, 82, 140, 0.5);
+      transform: scale(1.02);
+    }
+
+    .controls {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    select {
+      padding: 10px 14px;
+      border: 3px solid #fad08d;
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+      color: #eb5020;
+      font-weight: 500;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(240, 82, 140, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(240, 82, 140, 0.5);
+    }
+
+    .btn-primary {
+      background: var(--red-klee);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #eb5020;
+    }
+
+    .swap {
+      font-size: 32px;
+      background: none;
+      border: none;
+      color: #eb5020;
+      cursor: pointer;
+      transition: transform 0.4s;
+    }
+
+    .swap:hover {
+      transform: rotate(180deg) scale(1.2);
+    }
+
+    .result {
+      background: #fff9f0;
+      border: 3px solid #f0528c;
+      min-height: 220px;
+      font-size: 18px;
+      color: #333;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      padding: 16px;
+      text-align: center;
+      background: #fff0e6;
+      color: #eb5020;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    /* Animaciones bonitas */
+    @keyframes bounce {
+      from { transform: translateY(-5px); }
+      to { transform: translateY(5px); }
+    }
+
+    @keyframes sparkle {
+      0% { background-position: 0 0; }
+      100% { background-position: 200px 200px; }
+    }
+
+    .title-small {
+      color: #f0528c;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sparkles"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">traducKlee</div>
+      <h2 style="font-size:22px; font-weight:600;">¡El traductor más explosivo de Teyvat! 💣✨</h2>
+    </header>
+
+    <div class="main">
+      <!-- Caja izquierda -->
+      <div class="box box-left">
+        <div class="title-small">Desde</div>
+        <div class="controls">
+          <select id="fromLang">
+            <option value="auto">Detectar idioma ✨</option>
+          </select>
+          <button class="swap" onclick="swapLanguages()">⇄</button>
+        </div>
+        <textarea id="inputText" placeholder="Escribe o pega el texto aquí..."></textarea>
+        <div class="controls">
+          <button class="btn-primary" onclick="translateText()">Traducir 💥</button>
+          <button onclick="copyText('inputText')">📋 Copiar</button>
+          <button onclick="speakText('inputText')">🔊 Hablar</button>
+        </div>
+      </div>
+
+      <!-- Caja derecha -->
+      <div class="box">
+        <div class="title-small">Hacia</div>
+        <div class="controls">
+          <select id="toLang"></select>
+        </div>
+        <div id="outputText" class="result">La traducción aparecerá aquí... ¡con mucho cariño de Klee!</div>
+        <div class="controls">
+          <button onclick="copyText('outputText')">📋 Copiar</button>
+          <button onclick="speakText('outputText')">🔊 Hablar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      traducKlee • Inspirado en la Spark Knight Klee • Hecho con mucho amor y explosiones ❤️💣
+    </div>
+  </div>
+
+  <script>
+    // (El script es el mismo que la versión anterior, solo cambiamos algunos textos y colores)
+    const languages = {
+      "es": "Español", "en": "English", "fr": "Français", "de": "Deutsch",
+      "it": "Italiano", "pt": "Português", "ru": "Русский", "zh": "中文",
+      "ja": "日本語", "ko": "한국어", "ar": "العربية"
+    };
+
+    function loadLanguages() {
+      const fromSelect = document.getElementById('fromLang');
+      const toSelect = document.getElementById('toLang');
+
+      Object.keys(languages).forEach(code => {
+        let opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = languages[code];
+        fromSelect.appendChild(opt);
+      });
+
+      Object.keys(languages).forEach(code => {
+        let opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = languages[code];
+        if (code === "en") opt.selected = true;
+        toSelect.appendChild(opt);
+      });
+    }
+
+    async function translateText() {
+      const text = document.getElementById('inputText').value.trim();
+      if (!text) return;
+
+      const from = document.getElementById('fromLang').value;
+      const to = document.getElementById('toLang').value;
+
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from === 'auto' ? 'auto' : from}|${to}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        document.getElementById('outputText').innerHTML = data.responseData.translatedText || "¡Boom! Algo salió mal...";
+      } catch (err) {
+        document.getElementById('outputText').innerHTML = "¡Error de conexión! Inténtalo de nuevo 💣";
+      }
+    }
+
+    function swapLanguages() {
+      const from = document.getElementById('fromLang');
+      const to = document.getElementById('toLang');
+      const input = document.getElementById('inputText').value;
+      const output = document.getElementById('outputText').innerHTML;
+
+      if (from.value !== 'auto') {
+        const temp = from.value;
+        from.value = to.value;
+        to.value = temp;
+      }
+
+      document.getElementById('inputText').value = output;
+      document.getElementById('outputText').innerHTML = input || "La traducción aparecerá aquí...";
+    }
+
+    function copyText(id) {
+      let text = id === 'inputText' 
+        ? document.getElementById('inputText').value 
+        : document.getElementById('outputText').innerHTML;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => alert("¡Copiado con éxito! ✨"));
+    }
+
+    function speakText(id) {
+      let text = id === 'inputText' 
+        ? document.getElementById('inputText').value 
+        : document.getElementById('outputText').innerHTML;
+      if (!text) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+
+    document.getElementById('inputText').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        translateText();
+      }
+    });
+
+    window.onload = loadLanguages;
+  </script>
+</body>
+</html>
